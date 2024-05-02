@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { Col, Container, Image, Row } from "react-bootstrap";
+import { Col, Container, Image, ListGroup, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
 const MovieDetails = () => {
@@ -21,8 +21,6 @@ const MovieDetails = () => {
         }
       })
       .then((film) => {
-        console.log(film);
-
         setFilm(film);
       })
       .catch((err) => {
@@ -30,7 +28,15 @@ const MovieDetails = () => {
       });
   };
   const FetchComments = () => {
-    fetch("http://www.omdbapi.com/?apikey=e65097ca&i=" + params)
+    fetch(
+      "https://striveschool-api.herokuapp.com/api/comments/" + paramsToUse,
+      {
+        headers: {
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjE4ZWNmNTdmMzA0NjAwMWFlNTlmNmYiLCJpYXQiOjE3MTQ2NjE0NzYsImV4cCI6MTcxNTg3MTA3Nn0.hjt1X--w9lnauRLiJN8Fp2Vl81fjNpiXWgx_SYXgbEI",
+        },
+      }
+    )
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -38,10 +44,10 @@ const MovieDetails = () => {
           throw new Error(console.log("errore nella fetch"));
         }
       })
-      .then((comment) => {
-        console.log(comment);
+      .then((comments) => {
+        console.log(comments);
 
-        setComments(comment);
+        setComments(comments);
       })
       .catch((err) => {
         console.log(err);
@@ -55,7 +61,6 @@ const MovieDetails = () => {
     <Container className="text-light">
       <Row>
         <Col md={4}>
-          {" "}
           <Image src={film.Poster} rounded />
         </Col>
         <Col md={8}>
@@ -78,6 +83,20 @@ const MovieDetails = () => {
             </div>
           </div>
         </Col>
+      </Row>
+      <Row className="mt-5">
+        {comments.map((com) => {
+          return (
+            <Col>
+              <ListGroup>
+                <ListGroup.Item className="d-flex">
+                  <p>{com.comment}</p>
+                  <span className="ms-auto">{com.rate}/5</span>
+                </ListGroup.Item>
+              </ListGroup>
+            </Col>
+          );
+        })}
       </Row>
     </Container>
   );
